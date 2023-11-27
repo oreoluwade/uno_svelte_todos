@@ -63,6 +63,7 @@
 		/>
 	</div>
 	{#if editing}
+		<!-- svelte-ignore a11y-autofocus -->
 		<input
 			class="edit"
 			type="text"

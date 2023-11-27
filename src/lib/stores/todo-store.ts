@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { browser } from '$app/environment';
 
 export type Todo = {
 	title: string;
@@ -6,13 +7,11 @@ export type Todo = {
 	id: string;
 };
 
-const INITIAL_TODOS: Todo[] = [
-	{
-		title: 'First default todo',
-		completed: false,
-		id: '45672844'
-	}
-];
+const storeLocalStorage: Todo[] | null = browser
+	? JSON.parse(localStorage.getItem('mitodos') as string)
+	: [];
+
+const INITIAL_TODOS: Todo[] = storeLocalStorage ?? [];
 
 const generateRandomId = () => {
 	return Math.random().toString(16).slice(2);
@@ -20,6 +19,12 @@ const generateRandomId = () => {
 
 const createTodosStore = () => {
 	const { subscribe, set, update } = writable(INITIAL_TODOS);
+
+	subscribe((todos) => {
+		if (browser) {
+			localStorage.setItem('mitodos', JSON.stringify(todos));
+		}
+	});
 
 	const addNewTodo = (incomingTitle: string) => {
 		const newTodo: Todo = {
